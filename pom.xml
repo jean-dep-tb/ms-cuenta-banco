@@ -8,10 +8,10 @@
 		<version>2.2.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>spring.boot.webflu.ms.cuenta.banco</groupId>
-	<artifactId>spring-boot-webflu-ms-cuenta-banco</artifactId>
+	<groupId>spring.boot.webflu.ms.bancos</groupId>
+	<artifactId>spring-boot-webflu-ms-bancos</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring-boot-webflu-ms-cuenta-banco</name>
+	<name>spring-boot-webflu-ms-bancos</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>

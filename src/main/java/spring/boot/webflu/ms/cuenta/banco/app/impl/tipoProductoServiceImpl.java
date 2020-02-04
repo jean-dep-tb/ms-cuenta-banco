@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import spring.boot.webflu.ms.cuenta.banco.app.dao.TipoProductoDao;
-import spring.boot.webflu.ms.cuenta.banco.app.models.TypeCurrentAccount;
+import spring.boot.webflu.ms.cuenta.banco.app.documents.TypeCurrentAccount;
 import spring.boot.webflu.ms.cuenta.banco.app.service.TipoProductoService;
 
 @Service

@@ -1,4 +1,4 @@
-package spring.boot.webflu.ms.cuenta.banco.app.impl;
+package spring.boot.webflu.ms.cuenta.banco.app.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,33 +13,33 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import spring.boot.webflu.ms.cuenta.banco.app.client.ClientClient;
 import spring.boot.webflu.ms.cuenta.banco.app.client.CreditoClient;
-import spring.boot.webflu.ms.cuenta.banco.app.dao.ProductoDao;
-import spring.boot.webflu.ms.cuenta.banco.app.dao.TipoProductoDao;
-import spring.boot.webflu.ms.cuenta.banco.app.documents.CurrentAccount;
-import spring.boot.webflu.ms.cuenta.banco.app.documents.TypeCurrentAccount;
+import spring.boot.webflu.ms.cuenta.banco.app.dao.ProductoBancoDao;
+import spring.boot.webflu.ms.cuenta.banco.app.dao.TipoBancoProductoDao;
+import spring.boot.webflu.ms.cuenta.banco.app.documents.CuentaBanco;
+import spring.boot.webflu.ms.cuenta.banco.app.documents.TipoBancoCuenta;
 import spring.boot.webflu.ms.cuenta.banco.app.dto.Client;
-import spring.boot.webflu.ms.cuenta.banco.app.dto.CreditAccount;
+import spring.boot.webflu.ms.cuenta.banco.app.dto.CuentaCreditoDto;
 import spring.boot.webflu.ms.cuenta.banco.app.exception.RequestException;
-import spring.boot.webflu.ms.cuenta.banco.app.service.ProductoService;
-import spring.boot.webflu.ms.cuenta.banco.app.service.TipoProductoService;
+import spring.boot.webflu.ms.cuenta.banco.app.service.ProductoBancoService;
+import spring.boot.webflu.ms.cuenta.banco.app.service.TipoBancoProductoService;
 
 
 @Service
-public class ProductoServiceImpl implements ProductoService {
+public class ProductoBancoServiceImpl implements ProductoBancoService {
 
 //	@Value("{${com.bootcamp.gateway.url}}")
 	//String valor;
 	
-	private static final Logger log = LoggerFactory.getLogger(ProductoServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(ProductoBancoServiceImpl.class);
 	
 	@Autowired
-	public ProductoDao productoDao;
+	public ProductoBancoDao productoDao;
 
 	@Autowired
-	public TipoProductoDao tipoProductoDao;
+	public TipoBancoProductoDao tipoProductoDao;
 
 	@Autowired
-	private TipoProductoService tipoProductoService;
+	private TipoBancoProductoService tipoProductoService;
 	
 	//consultar otros ms-cliente
 	@Autowired
@@ -49,25 +49,25 @@ public class ProductoServiceImpl implements ProductoService {
 	private CreditoClient creditoClient;
 
 	@Override
-	public Flux<CurrentAccount> findAllProductoBanco() {
+	public Flux<CuentaBanco> findAllProductoBanco() {
 		return productoDao.findAll();
 
 	}
 
 	@Override
-	public Mono<CurrentAccount> findByIdProductoBanco(String id) {
+	public Mono<CuentaBanco> findByIdProductoBanco(String id) {
 		return productoDao.findById(id);
 
 	}
 
 	@Override
-	public Flux<CurrentAccount> findAllProductoByDniCliente(String dniCliente) {
+	public Flux<CuentaBanco> findAllProductoByDniCliente(String dniCliente) {
 
 		return productoDao.viewDniCliente(dniCliente);
 	}
 
 	@Override
-	public Mono<CurrentAccount> retiro(Double monto, String numTarjeta, Double comision, String codigo_bancario) {
+	public Mono<CuentaBanco> retiro(Double monto, String numTarjeta, Double comision, String codigo_bancario) {
 		//BUSCA EL NUMERO DE LA CUENTA-TARJETA CON SU BANCO CORRESPONDIENTE
 		//PARA OBTERNER TODOS LOS DATOS PARA QUITAR EL MONTO
 		
@@ -87,7 +87,7 @@ public class ProductoServiceImpl implements ProductoService {
 	}
 
 	@Override
-	public Mono<CurrentAccount> depositos(Double monto, String numTarjeta, Double comision, String codigo_bancario) {
+	public Mono<CuentaBanco> depositos(Double monto, String numTarjeta, Double comision, String codigo_bancario) {
 		return productoDao.viewNumTarjeta(numTarjeta,codigo_bancario).flatMap(c -> {
 			c.setSaldo((c.getSaldo() + monto) - comision);
 			return productoDao.save(c);
@@ -95,12 +95,16 @@ public class ProductoServiceImpl implements ProductoService {
 	}
 
 	@Override
-	public Flux<CurrentAccount> saveProductoBancoCliente(CurrentAccount producto) {
+	public Flux<CuentaBanco> saveProductoBancoCliente(CuentaBanco producto) {
 
-		List<CurrentAccount> listProducto = new ArrayList<CurrentAccount>();
+		
+		System.out.println("Entro al metodo crear producto");
+		System.out.println(producto.toString());
+		
+		List<CuentaBanco> listProducto = new ArrayList<CuentaBanco>();
 		listProducto.add(producto);
 		
-		Flux<CurrentAccount> fMono = Flux.fromIterable(listProducto);
+		Flux<CuentaBanco> fMono = Flux.fromIterable(listProducto);
 		
 		/*
 		tipo producto
@@ -131,15 +135,25 @@ public class ProductoServiceImpl implements ProductoService {
 			//consumir el servicio credito para saver si tiene una 
 			//deuda o  no
 			
-			Flux<CreditAccount> cred = creditoClient.findByNumDoc(f.getDni());
-				
-			return cred.flatMap(ba -> {
+			System.out.println(f.getDni());
 			
-				if(ba.getConsumo() > 0) {
+			//Flux<CuentaCreditoDto> cred = creditoClient.findByNumDoc(f.getDni()).count();
+			
+			//System.out.println("respuesta del ms-credito : " + cred.count());
+			
+			//cred.subscribe(p -> log.info("Insert: " + p));
+			
+			//return cred.flatMap(deuda -> {
+			
+			Flux<CuentaCreditoDto> cred = creditoClient.findByNumDoc(f.getDni());
+			
+			return cred.flatMap(deuda -> {
+				
+				if(deuda.getConsumo() > 0) {
 					throw new RequestException("TIENES UNA DEUDA - NO PUEDES ADQUIRIR UN PRODUCTO");
 				}
 				
-				//buscar el numero de documento en ms-cliente
+				//BUSCAR EL NUMERO DE DOCUMENTO
 				
 				System.out.println("El DNI es : --->" + f.getDni());
 				
@@ -147,10 +161,10 @@ public class ProductoServiceImpl implements ProductoService {
 				
 				log.info("datos cliente --->> "+cli.map(c-> "DNI : " + c.getDni()));
 
-				return cli.flatMap(p -> {
+				return cli.flatMap(p -> {					
 					
-					//compara el codigo del cliente consultardo 
-					//con el codigo que se esta mandando en cuenta banco
+					//COMPARA EL CODIGO DE BANCO DEL CLIENTE CON
+					//EL CODIGO DE QUE ESTA MANDANDO DEL BANCO
 					if(!p.getCodigoBanco().equalsIgnoreCase(f.getCodigoBanco())) {
 						
 						throw new RequestException("LA CUENTA-PRODUCTO DEL CLIENTE NO PERTENECE AL BANCO");
@@ -186,7 +200,7 @@ public class ProductoServiceImpl implements ProductoService {
 										&& !f.getTipoProducto().getIdTipo().equalsIgnoreCase("2")
 										&& !f.getTipoProducto().getIdTipo().equalsIgnoreCase("3")) {
 
-									CurrentAccount f1 = new CurrentAccount();
+									CuentaBanco f1 = new CuentaBanco();
 
 									f1.setDni(f.getDni());
 									f1.setNumero_cuenta(f.getNumero_cuenta());
@@ -197,7 +211,7 @@ public class ProductoServiceImpl implements ProductoService {
 									f1.setClave(f.getClave());
 									f1.setCodigoBanco(f.getCodigoBanco());
 
-									TypeCurrentAccount t = new TypeCurrentAccount();
+									TipoBancoCuenta t = new TipoBancoCuenta();
 									t.setIdTipo(f.getTipoProducto().getIdTipo());
 									t.setDescripcion(f.getTipoProducto().getDescripcion());
 
@@ -211,7 +225,7 @@ public class ProductoServiceImpl implements ProductoService {
 							//SINO TIENE NINGUNA CUENTA CREADA
 							} else {
 
-								CurrentAccount f1 = new CurrentAccount();
+								CuentaBanco f1 = new CuentaBanco();
 
 								f1.setDni(f.getDni());
 								f1.setNumero_cuenta(f.getNumero_cuenta());
@@ -222,7 +236,7 @@ public class ProductoServiceImpl implements ProductoService {
 								f1.setClave(f.getClave());
 								f1.setCodigoBanco(f.getCodigoBanco());
 
-								TypeCurrentAccount t = new TypeCurrentAccount();
+								TipoBancoCuenta t = new TipoBancoCuenta();
 								t.setIdTipo(f.getTipoProducto().getIdTipo());
 								t.setDescripcion(f.getTipoProducto().getDescripcion());
 
@@ -242,7 +256,7 @@ public class ProductoServiceImpl implements ProductoService {
 							throw new RequestException("CLIENTE EMPRESARIAL : NO PUEDE TENER CUENTA DE ESTE TIPO");
 						}
 
-						CurrentAccount f1 = new CurrentAccount();
+						CuentaBanco f1 = new CuentaBanco();
 
 						f1.setDni(f.getDni());
 						f1.setNumero_cuenta(f.getNumero_cuenta());
@@ -253,7 +267,7 @@ public class ProductoServiceImpl implements ProductoService {
 						f1.setClave(f.getClave());
 						f1.setCodigoBanco(f.getCodigoBanco());
 
-						TypeCurrentAccount t = new TypeCurrentAccount();
+						TipoBancoCuenta t = new TipoBancoCuenta();
 						t.setIdTipo(f.getTipoProducto().getIdTipo());
 						t.setDescripcion(f.getTipoProducto().getDescripcion());
 						f1.setTipoProducto(t);
@@ -273,7 +287,7 @@ public class ProductoServiceImpl implements ProductoService {
 							throw new RequestException("DEBE TENER SALDO MINIMO S/.10.00");
 						}else {
 													
-							CurrentAccount f1 = new CurrentAccount();
+							CuentaBanco f1 = new CuentaBanco();
 							f1.setDni(f.getDni());
 							f1.setNumero_cuenta(f.getNumero_cuenta());
 							f1.setFecha_afiliacion(f.getFecha_afiliacion());
@@ -283,7 +297,7 @@ public class ProductoServiceImpl implements ProductoService {
 							f1.setClave(f.getClave());
 							f1.setCodigoBanco(f.getCodigoBanco());
 
-							TypeCurrentAccount t = new TypeCurrentAccount();
+							TipoBancoCuenta t = new TipoBancoCuenta();
 							t.setIdTipo(f.getTipoProducto().getIdTipo());
 							t.setDescripcion(f.getTipoProducto().getDescripcion());
 							f1.setTipoProducto(t);
@@ -302,7 +316,7 @@ public class ProductoServiceImpl implements ProductoService {
 							throw new RequestException("DEBE TENER SALDO MINIMO S/.50.00");
 					
 						}else {
-							CurrentAccount f1 = new CurrentAccount();
+							CuentaBanco f1 = new CuentaBanco();
 
 							f1.setDni(f.getDni());
 							f1.setNumero_cuenta(f.getNumero_cuenta());
@@ -313,7 +327,7 @@ public class ProductoServiceImpl implements ProductoService {
 							f1.setClave(f.getClave());
 							f1.setCodigoBanco(f.getCodigoBanco());
 
-							TypeCurrentAccount t = new TypeCurrentAccount();
+							TipoBancoCuenta t = new TipoBancoCuenta();
 							t.setIdTipo(f.getTipoProducto().getIdTipo());
 							t.setDescripcion(f.getTipoProducto().getDescripcion());
 							f1.setTipoProducto(t);
@@ -331,7 +345,7 @@ public class ProductoServiceImpl implements ProductoService {
 								throw new RequestException("DEBE TENER SALDO MINIMO S/.100.00");
 						
 						} else {
-							CurrentAccount f1 = new CurrentAccount();
+							CuentaBanco f1 = new CuentaBanco();
 
 							f1.setDni(f.getDni());
 							f1.setNumero_cuenta(f.getNumero_cuenta());
@@ -342,7 +356,7 @@ public class ProductoServiceImpl implements ProductoService {
 							f1.setClave(f.getClave());
 							f1.setCodigoBanco(f.getCodigoBanco());
 
-							TypeCurrentAccount t = new TypeCurrentAccount();
+							TipoBancoCuenta t = new TipoBancoCuenta();
 							t.setIdTipo(f.getTipoProducto().getIdTipo());
 							t.setDescripcion(f.getTipoProducto().getDescripcion());
 							f1.setTipoProducto(t);
@@ -354,8 +368,6 @@ public class ProductoServiceImpl implements ProductoService {
 					return Mono.empty();
 
 				});
-				
-				
 			});
 			
 		});
@@ -363,13 +375,13 @@ public class ProductoServiceImpl implements ProductoService {
 	}
 
 	@Override
-	public Mono<CurrentAccount> listProdNumTarj(String num, String codigo_bancario) {
+	public Mono<CuentaBanco> listProdNumTarj(String num, String codigo_bancario) {
 		System.out.println("lista productos por numero de targeta");
 		return productoDao.viewNumTarjeta(num, codigo_bancario);
 	}
 	
 	@Override
-	public Mono<CurrentAccount> saveProductoBanco(CurrentAccount producto) {
+	public Mono<CuentaBanco> saveProductoBanco(CuentaBanco producto) {
 		// TODO Auto-generated method stub
 		return productoDao.save(producto);
 	}

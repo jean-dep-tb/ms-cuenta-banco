@@ -10,20 +10,20 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import reactor.core.publisher.Flux;
-import spring.boot.webflu.ms.cuenta.banco.app.models.CurrentAccount;
-import spring.boot.webflu.ms.cuenta.banco.app.models.TypeCurrentAccount;
-import spring.boot.webflu.ms.cuenta.banco.app.service.ProductoService;
-import spring.boot.webflu.ms.cuenta.banco.app.service.TipoProductoService;
+import spring.boot.webflu.ms.cuenta.banco.app.documents.CuentaBanco;
+import spring.boot.webflu.ms.cuenta.banco.app.documents.TipoBancoCuenta;
+import spring.boot.webflu.ms.cuenta.banco.app.service.ProductoBancoService;
+import spring.boot.webflu.ms.cuenta.banco.app.service.TipoBancoProductoService;
 
 @EnableEurekaClient
 @SpringBootApplication
 public class SpringBootWebfluMsCuentaBancoApplication implements CommandLineRunner{
 
 	@Autowired
-	private ProductoService serviceProducto;
+	private ProductoBancoService serviceProducto;
 	
 	@Autowired
-	private TipoProductoService serviceTipoProducto;
+	private TipoBancoProductoService serviceTipoProducto;
 	
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;
@@ -40,14 +40,14 @@ public class SpringBootWebfluMsCuentaBancoApplication implements CommandLineRunn
 		mongoTemplate.dropCollection("ProductosBancarios").subscribe();
 		mongoTemplate.dropCollection("TipoProducto").subscribe();
 		
-		TypeCurrentAccount ahorro = new TypeCurrentAccount("1","ahorro");
-		TypeCurrentAccount ahorroVip = new TypeCurrentAccount("2","ahorroVip");
-		TypeCurrentAccount corriente = new TypeCurrentAccount("3","corriente");
-		TypeCurrentAccount corrienteVip = new TypeCurrentAccount("4","corrienteVip");
-		TypeCurrentAccount plazoFijo = new TypeCurrentAccount("5","plazoFijo");
-		TypeCurrentAccount plazoFijoVip = new TypeCurrentAccount("6","plazoFijoVip");
-		TypeCurrentAccount pyme = new TypeCurrentAccount("7","pyme");
-		TypeCurrentAccount corporativo = new TypeCurrentAccount("8","corporativo");
+		TipoBancoCuenta ahorro = new TipoBancoCuenta("1","ahorro");
+		TipoBancoCuenta ahorroVip = new TipoBancoCuenta("2","ahorroVip");
+		TipoBancoCuenta corriente = new TipoBancoCuenta("3","corriente");
+		TipoBancoCuenta corrienteVip = new TipoBancoCuenta("4","corrienteVip");
+		TipoBancoCuenta plazoFijo = new TipoBancoCuenta("5","plazoFijo");
+		TipoBancoCuenta plazoFijoVip = new TipoBancoCuenta("6","plazoFijoVip");
+		TipoBancoCuenta pyme = new TipoBancoCuenta("7","pyme");
+		TipoBancoCuenta corporativo = new TipoBancoCuenta("8","corporativo");
 		//
 		Flux.just(ahorro,ahorroVip,corriente,corrienteVip,plazoFijo,plazoFijoVip,pyme,corporativo)
 		.flatMap(serviceTipoProducto::saveTipoProducto)
@@ -55,18 +55,19 @@ public class SpringBootWebfluMsCuentaBancoApplication implements CommandLineRunn
 			log.info("Tipo cliente creado: " +  c.getDescripcion() + ", Id: " + c.getIdTipo());
 		}).thenMany(					
 				Flux.just(
-						new CurrentAccount("07091424","0001",ahorro,1000.0),
-						new CurrentAccount("07091425","0002",ahorroVip,2000.0),
-						new CurrentAccount("07091426","0003",corriente,3000.0),
-						new CurrentAccount("07091427","0004",corrienteVip,4000.0),
-						new CurrentAccount("07091428","0005",plazoFijo,5000.0),
-						new CurrentAccount("07091429","0006",plazoFijoVip,6000.0),
-						new CurrentAccount("07091430","0007",pyme,7000.0),
-						new CurrentAccount("07091431","0008",corporativo,8000.0)
+						
+						new CuentaBanco("47305710","900001",ahorro,10000.0,"bcp"),
+						new CuentaBanco("47305710","900002",ahorroVip,20000.0,"bbva"),
+						new CuentaBanco("47305711","900003",corriente,30000.0,"bcp"),
+						new CuentaBanco("47305711","900004",corrienteVip,40000.0,"bbva"),
+						new CuentaBanco("47305712","900005",plazoFijo,50000.0,"yyy"),
+						new CuentaBanco("47305712","900006",plazoFijoVip,60000.0,"xxx"),
+						new CuentaBanco("47305713","900007",pyme,70000.0,"xxx"),
+						new CuentaBanco("47305713","900008",corporativo,80000.0,"yyy")
 
 						)					
 					.flatMap(producto -> {
-						return serviceProducto.saveProducto(producto);
+						return serviceProducto.saveProductoBanco(producto);
 					})					
 				).subscribe(producto -> log.info("Insert: " + producto.getId() + " " + producto.getNumero_cuenta()));
 		

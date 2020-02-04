@@ -14,10 +14,10 @@ public class AppConfig {
 		return WebClient.create("http://localhost:8020/api/Clientes");
 	}
 	
-//	@Bean
-//	@Qualifier("operations")
-//	public WebClient registrarWebClientAdmin() {
-//		return WebClient.create("http://localhost:8029/api/accountOperations");
-//	}
+	@Bean
+	@Qualifier("credito")
+	public WebClient registrarWebCreditClient() {
+		return WebClient.create("http://localhost:8022/api/ProductoCredito");
+	}
 
 }

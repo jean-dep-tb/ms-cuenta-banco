@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import spring.boot.webflu.ms.cuenta.banco.app.documents.TypeCurrentAccount;
-import spring.boot.webflu.ms.cuenta.banco.app.service.TipoProductoService;
+import spring.boot.webflu.ms.cuenta.banco.app.documents.TipoBancoCuenta;
+import spring.boot.webflu.ms.cuenta.banco.app.service.TipoBancoProductoService;
 
 @RequestMapping("/api/TipoProducto")
 @RestController
-public class TipoProductoControllers {
+public class TipoProductoBancoControllers {
 
 	
 	@Autowired
-	private TipoProductoService  tipoProductosService;
+	private TipoBancoProductoService  tipoProductosService;
 	
 	@GetMapping
-	public Mono<ResponseEntity<Flux<TypeCurrentAccount>>> findAll() 
+	public Mono<ResponseEntity<Flux<TipoBancoCuenta>>> findAll() 
 	{
 		return Mono.just(
 				ResponseEntity
@@ -39,7 +39,7 @@ public class TipoProductoControllers {
 	
 	
 	@GetMapping("/{id}")
-	public Mono<ResponseEntity<TypeCurrentAccount>> viewId(@PathVariable String id){
+	public Mono<ResponseEntity<TipoBancoCuenta>> viewId(@PathVariable String id){
 		return tipoProductosService.findByIdTipoProducto(id).map(p-> ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.body(p))
@@ -47,7 +47,7 @@ public class TipoProductoControllers {
 	}
 	
 	@PutMapping
-	public Mono<TypeCurrentAccount> updateProducto(@RequestBody TypeCurrentAccount tipoProducto)
+	public Mono<TipoBancoCuenta> updateProducto(@RequestBody TipoBancoCuenta tipoProducto)
 	{
 		//System.out.println(cliente.toString());
 		return tipoProductosService.saveTipoProducto(tipoProducto);
@@ -63,7 +63,7 @@ public class TipoProductoControllers {
 	}
 	
 	@PostMapping
-	public Mono<TypeCurrentAccount> saveTipoProducto(@RequestBody TypeCurrentAccount tipoProducto)
+	public Mono<TipoBancoCuenta> saveTipoProducto(@RequestBody TipoBancoCuenta tipoProducto)
 	{
 		return tipoProductosService.saveTipoProducto(tipoProducto);
 	}	

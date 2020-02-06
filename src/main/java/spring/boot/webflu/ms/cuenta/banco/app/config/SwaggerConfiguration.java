@@ -18,4 +18,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebFlux;
 					.paths(PathSelectors.any())
 					.build();
 	    }
+	    
+	    //http://localhost:8021/swagger-ui.html
+	    
 }

@@ -12,11 +12,13 @@ public interface ProductoBancoDao extends ReactiveMongoRepository<CuentaBanco, S
 
 	//busca por numero de documento y tipo de producto si ya esta registrado
 	@Query("{ 'dni' : ?0 , 'tipoProducto.idTipo' : ?1, 'codigoBanco': ?2 }")
-	Flux<CuentaBanco> viewDniCliente2(String dni, String idTipo, String codigo_bancario);
+	Flux<CuentaBanco> buscarPorDocTipoCuentaBanco(String dni, String idTipo, String codigo_bancario);//viewDniCliente2
 	
 	
-	@Query("{ 'dni' : ?0 }")
-	Flux<CuentaBanco> viewDniCliente(String dni);
+//	@Query("{ 'dni' : ?0 }")
+//	Flux<CuentaBanco> viewDniCliente(String dni);
+	
+	Flux<CuentaBanco> findByDni(String dni);
 
 	//BUSCA EL NUMERO DE CUENTA - TARGETA CON SU BANCO
 	@Query("{ 'numeroCuenta' : ?0, 'codigoBanco': ?1}")

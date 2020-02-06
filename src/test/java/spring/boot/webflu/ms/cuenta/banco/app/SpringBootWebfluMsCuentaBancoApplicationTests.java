@@ -39,7 +39,7 @@ class SpringBootWebfluMsCuentaBancoApplicationTests {
 			List<CuentaBanco> cuentaBanco = response.getResponseBody();
 			
 			cuentaBanco.forEach(p -> {
-				System.out.println(p.getNumero_cuenta());
+				System.out.println(p.getNumeroCuenta());
 			});
 			
 			Assertions.assertThat(cuentaBanco.size() > 0).isTrue();
@@ -55,7 +55,7 @@ class SpringBootWebfluMsCuentaBancoApplicationTests {
 		
 		CuentaBanco ctBanco = new CuentaBanco();
 		ctBanco.setDni("47305710");
-		ctBanco.setNumero_cuenta("900001");
+		ctBanco.setNumeroCuenta("900001");
 		ctBanco.setTipoProducto(tict);
 		ctBanco.setFecha_afiliacion("2020-02-03");
 		ctBanco.setFecha_caducidad("2020-02-03");
@@ -76,7 +76,7 @@ class SpringBootWebfluMsCuentaBancoApplicationTests {
 		.consumeWith(response -> {
 			CuentaBanco b = response.getResponseBody();
 			Assertions.assertThat(b.getDni()).isNotEmpty().isEqualTo("47305710");
-			Assertions.assertThat(b.getNumero_cuenta()).isNotEmpty().isEqualTo("900001");
+			Assertions.assertThat(b.getNumeroCuenta()).isNotEmpty().isEqualTo("900001");
 			Assertions.assertThat(b.getTipoProducto().getDescripcion()).isNotEmpty().isEqualTo("ahorro");
 			Assertions.assertThat(b.getFecha_afiliacion()).isNotEmpty().isEqualTo("2020-02-03");
 			Assertions.assertThat(b.getFecha_caducidad()).isNotEmpty().isEqualTo("2020-02-03");

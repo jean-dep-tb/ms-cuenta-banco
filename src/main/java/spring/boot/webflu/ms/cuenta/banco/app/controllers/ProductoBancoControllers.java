@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiOperation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import spring.boot.webflu.ms.cuenta.banco.app.documents.CuentaBanco;
@@ -28,7 +30,7 @@ public class ProductoBancoControllers {
 	@Autowired
 	private ProductoBancoService productoService;
 
-	//LISTA LAS CUENTAS DE BANCO EXISTENTES
+	@ApiOperation(value = "LISTA LAS CUENTAS DE BANCO EXISTENTES", notes="")
 	@GetMapping
 	public Mono<ResponseEntity<Flux<CuentaBanco>>> findAll() {
 		return Mono.just(
@@ -37,7 +39,7 @@ public class ProductoBancoControllers {
 		);
 	}
 
-	//TODAS CUENTAS BANCARIAS POR ID
+	@ApiOperation(value = "TODAS CUENTAS BANCARIAS POR ID", notes="")
 	@GetMapping("/{id}")
 	public Mono<ResponseEntity<CuentaBanco>> viewId(@PathVariable String id) {
 		return productoService.findByIdProductoBanco(id)
@@ -45,15 +47,14 @@ public class ProductoBancoControllers {
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 
-	// ACTUALIZAR LA CUENTA
+	@ApiOperation(value = "ACTUALIZAR LA CUENTA", notes="")
 	@PutMapping
 	public Mono<CuentaBanco> updateProducto(@RequestBody CuentaBanco producto) {
 
 		return productoService.saveProductoBanco(producto);
 	}
-	
-	//REALIZAR RETIRO DE LA CUENTA BANCARIA
-	//SERVICIO CONSUMIDO DESDE MS-OP-BANCOS
+
+	@ApiOperation(value = "REALIZAR RETIRO DE LA CUENTA BANCARIA - SERVICIO CONSUMIDO DESDE MS-OP-BANCOS", notes="")
 	@PutMapping("/retiro/{numero_cuenta}/{monto}/{comision}/{codigo_bancario}")
 	public Mono<CuentaBanco> retiroBancario(@PathVariable String numero_cuenta,@PathVariable Double monto,
 			@PathVariable Double comision, @PathVariable String codigo_bancario) {
@@ -62,11 +63,12 @@ public class ProductoBancoControllers {
 		return productoService.retiro(monto, numero_cuenta, comision,codigo_bancario);
 	}
 	
-	//REALIZA UN DEPOSITO A LA CUENTA
-	//SERVICIO CONSUMIDO DESDE MS-OP-BANCOS
+	@ApiOperation(value = "REALIZA UN DEPOSITO A LA CUENTA - SERVICIO CONSUMIDO DESDE MS-OP-BANCOS", notes="")
 	@PutMapping("/deposito/{numero_Cuenta}/{monto}/{comision}/{codigo_bancario}")
 	public Mono<CuentaBanco> despositoBancario(@PathVariable Double monto, @PathVariable String numero_Cuenta,
 			@PathVariable Double comision,@PathVariable String codigo_bancario) {
+		
+		System.out.println("Comision :" + comision);
 
 		return productoService.depositos(monto, numero_Cuenta, comision,codigo_bancario);
 	}
@@ -82,9 +84,7 @@ public class ProductoBancoControllers {
 //		return productoService.depositos(monto, numero_Cuenta, codigo_bancario);
 //	}
 
-	
-	//GUARDAR UN PRODUCTO BANCARIO - TIPO AHORRO, PLAZO FIJO,CORRIENTE,AHORRO VIP,CORRIENTE VIP,EMPRESARIAL PYME,CORPORATIVO
-	//PLAZO FIJO VIP
+	@ApiOperation(value = "GUARDAR UN PRODUCTO BANCARIO - TIPO AHORRO, PLAZO FIJO,CORRIENTE,AHORRO VIP,CORRIENTE VIP,EMPRESARIAL PYME,CORPORATIVO,PLAZO FIJO VIP", notes="")
 	@PostMapping
 	public Flux<CuentaBanco> guardarProductoBanco(@RequestBody CuentaBanco pro) {
 		
@@ -92,28 +92,28 @@ public class ProductoBancoControllers {
 		return productoService.saveProductoBancoCliente(pro);
 	}
 	
-	// GUARDA CUENTA PRODUCTO BANCO ---> 
+	@ApiOperation(value = "GUARDA CUENTA PRODUCTO BANCO - SIN VALIDAR", notes="")
 	@PostMapping("/guardarProductoBanco")
 	public Mono<CuentaBanco> guardarProBanco(@RequestBody CuentaBanco cuentaBanco) {
 		return productoService.saveProductoBanco(cuentaBanco);
 	}
-		
-	//MUESTRA LA CUENTA BANCARIA POR EL NUMERO DE TARJETA Y EL CODIGO DE BANCO
+
+	@ApiOperation(value = "MUESTRA LA CUENTA BANCARIA POR EL NUMERO DE TARJETA Y EL CODIGO DE BANCO", notes="")
 	@GetMapping("/numero_cuenta/{num}/{codigo_bancario}")
 	public Mono<CuentaBanco> productosBancoPorBancos(@PathVariable String num, @PathVariable String codigo_bancario) {
 		Mono<CuentaBanco> producto = productoService.listProdNumTarj(num, codigo_bancario);
 		return producto;
 	}
 
-	//MUESTRA LAS CUENTAS DE LOS CLIENTES -{TRANSACCIONES REALIZADAS Y TODAS LAS CUENTAS ASOCIADAS CON ESE CLIENTE}
+	//
+	@ApiOperation(value = "MUESTRA LAS CUENTAS DE LOS CLIENTES -{TRANSACCIONES REALIZADAS Y TODAS LAS CUENTAS ASOCIADAS CON ESE CLIENTE}3", notes="")
 	@GetMapping("/dni/{dni}")
 	public Flux<CuentaBanco> mostrarProductoBancoCliente(@PathVariable String dni) {
 		Flux<CuentaBanco> producto = productoService.findAllProductoByDniCliente(dni);
 		return producto;
 	} 
-	
-	//MUESTRA LOS SALDOS DE LA CUENTAS DE BANCO
-	//CON EL NUMERO DE CUENTA Y EL CODIGO DE BANCO
+
+	@ApiOperation(value = "MUESTRA LOS SALDOS DE LA CUENTAS DE BANCO - CON EL NUMERO DE CUENTA Y EL CODIGO DE BANCO", notes="")
 	@GetMapping("/SaldosBancarios/{numero_cuenta}/{codigo_bancario}")
 	public Mono<CuentaBancoDto> saldosClienteBancos(@PathVariable String numero_cuenta,@PathVariable String codigo_bancario) {
 		
@@ -134,7 +134,7 @@ public class ProductoBancoControllers {
 			
 			
 			pp.setDni(c.getDni());
-			pp.setNumero_cuenta(c.getNumero_cuenta());
+			pp.setNumero_cuenta(c.getNumeroCuenta());
 			pp.setSaldo(c.getSaldo());
 			pp.setTipoProducto(tp);
 

@@ -19,7 +19,7 @@ public interface ProductoBancoDao extends ReactiveMongoRepository<CuentaBanco, S
 	Flux<CuentaBanco> viewDniCliente(String dni);
 
 	//BUSCA EL NUMERO DE CUENTA - TARGETA CON SU BANCO
-	@Query("{ 'numero_cuenta' : ?0, 'codigoBanco': ?1}")
+	@Query("{ 'numeroCuenta' : ?0, 'codigoBanco': ?1}")
 	Mono<CuentaBanco> viewNumTarjeta(String numTarjeta,String codigo_bancario);
 	
 

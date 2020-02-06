@@ -22,10 +22,6 @@ public class CreditoClient {
 	@Autowired
 	@Qualifier("credito")
 	private WebClient creditoClient;
-	
-//	Flux<CreditAccount> cred = WebClient.builder()
-//	.baseUrl("http://" + valor + "/productos_creditos/api/ProductoCredito/").build().get()
-//	.uri("/dni/" + f.getDni()).retrieve().bodyToFlux(CreditAccount.class).log();
 
 	public Flux<CuentaCreditoDto> findByNumDoc(String dni) {
 		

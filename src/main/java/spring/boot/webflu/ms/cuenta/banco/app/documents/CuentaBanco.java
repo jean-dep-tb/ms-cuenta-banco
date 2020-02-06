@@ -24,7 +24,7 @@ public class CuentaBanco {
 	@NotEmpty
 	private String dni;
 	@NotEmpty
-	private String numero_cuenta; //DEBE DE SER UNICO
+	private String numeroCuenta; //DEBE DE SER UNICO - numero_cuenta
 	@NotEmpty
 	
 	private TipoBancoCuenta tipoProducto;
@@ -56,10 +56,10 @@ public class CuentaBanco {
 
 	}
 
-	public CuentaBanco(String dni,String numero_cuenta,
+	public CuentaBanco(String dni,String numeroCuenta,
 			TipoBancoCuenta tipoProducto,double saldo,String codigoBanco) {
 		this.dni = dni;
-		this.numero_cuenta = numero_cuenta;
+		this.numeroCuenta = numeroCuenta;
 		this.tipoProducto = tipoProducto;
 		this.saldo = saldo;
 		this.codigoBanco = codigoBanco;

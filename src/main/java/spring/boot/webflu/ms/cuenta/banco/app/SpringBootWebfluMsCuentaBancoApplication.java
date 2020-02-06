@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
@@ -15,6 +16,7 @@ import spring.boot.webflu.ms.cuenta.banco.app.documents.TipoBancoCuenta;
 import spring.boot.webflu.ms.cuenta.banco.app.service.ProductoBancoService;
 import spring.boot.webflu.ms.cuenta.banco.app.service.TipoBancoProductoService;
 
+@EnableCircuitBreaker
 @EnableEurekaClient
 @SpringBootApplication
 public class SpringBootWebfluMsCuentaBancoApplication implements CommandLineRunner{
@@ -58,7 +60,7 @@ public class SpringBootWebfluMsCuentaBancoApplication implements CommandLineRunn
 						
 						new CuentaBanco("47305710","900001",ahorro,10000.0,"bcp"),
 						new CuentaBanco("47305710","900002",ahorroVip,20000.0,"bbva"),
-						new CuentaBanco("47305711","900003",corriente,30000.0,"bcp"),
+						new CuentaBanco("47305710","900003",corriente,30000.0,"bcp"),
 						new CuentaBanco("47305711","900004",corrienteVip,40000.0,"bbva"),
 						new CuentaBanco("47305712","900005",plazoFijo,50000.0,"yyy"),
 						new CuentaBanco("47305712","900006",plazoFijoVip,60000.0,"xxx"),
@@ -69,7 +71,7 @@ public class SpringBootWebfluMsCuentaBancoApplication implements CommandLineRunn
 					.flatMap(producto -> {
 						return serviceProducto.saveProductoBanco(producto);
 					})					
-				).subscribe(producto -> log.info("Insert: " + producto.getId() + " " + producto.getNumero_cuenta()));
+				).subscribe(producto -> log.info("Insert: " + producto.getId() + " " + producto.getNumeroCuenta()));
 		
 		
 	}

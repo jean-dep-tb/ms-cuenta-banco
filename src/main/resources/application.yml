@@ -1,0 +1,5 @@
+spring:
+   application:
+    name: ms-cuenta-banco
+   config:
+     import: optional:configserver:http://localhost:8888

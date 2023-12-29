@@ -72,6 +72,7 @@ public class ProductoBancoServiceImpl implements ProductoBancoService {
 		//PARA OBTERNER TODOS LOS DATOS PARA QUITAR EL MONTO
 		
 		System.out.println("llego desde el controlador");
+		log.debug("Llego desde el controlador");
 		
 		return productoDao.viewNumTarjeta(numTarjeta,codigo_bancario).flatMap(c -> {
 
@@ -101,7 +102,7 @@ public class ProductoBancoServiceImpl implements ProductoBancoService {
 	@Override
 	public Flux<CuentaBanco> saveProductoBancoCliente(CuentaBanco producto) {
 
-		
+		log.debug("Entro al metodo crear producto");
 		System.out.println("Entro al metodo crear producto");
 		System.out.println(producto.toString());
 		
@@ -132,15 +133,17 @@ public class ProductoBancoServiceImpl implements ProductoBancoService {
 			}
 			return false;
 		}).flatMap(f -> {
-			
+			log.debug("DNI : " + f.getDni());
 			System.out.println(f.getDni());
 			
-			//BUSCA SI TINE UNA DEUDA DE UN PRODUCTO DE CREDITO		
+			//BUSCA SI TINE UNA DEUDA DE UN PRODUCTO DE CREDITO	
+			log.debug("BUSCA SI TINE UNA DEUDA DE UN PRODUCTO DE CREDITO");
 			Flux<CuentaCreditoDto> cred = creditoClient.findByNumDoc(f.getDni());			
 		
 			return cred.defaultIfEmpty(new CuentaCreditoDto()).flatMap(n->{
 				
 				//SI NO TIENE UNA CUENTA SIGNIFICA QUE NO TIENE DEUDA
+				log.debug("El numero de cuenta es : " + n.getNumero_cuenta());
 				System.out.println("El numero de cuenta es : " + n.getNumero_cuenta());
 				
 				return cred.flatMap(deuda -> {
@@ -155,7 +158,7 @@ public class ProductoBancoServiceImpl implements ProductoBancoService {
 					}
 					
 					//BUSCAR EL NUMERO DE DOCUMENTO
-					
+					log.debug("El DNI es : --->" + f.getDni());
 					System.out.println("El DNI es : --->" + f.getDni());
 					//OBTENIENDO LOS DATOS DEL CLIENTE
 					Mono<Client> cli = clientClient.findByNumDoc(f.getDni());

@@ -87,7 +87,7 @@ public class ProductoBancoControllers {
 	@ApiOperation(value = "GUARDAR UN PRODUCTO BANCARIO - TIPO AHORRO, PLAZO FIJO,CORRIENTE,AHORRO VIP,CORRIENTE VIP,EMPRESARIAL PYME,CORPORATIVO,PLAZO FIJO VIP", notes="")
 	@PostMapping
 	public Flux<CuentaBanco> guardarProductoBanco(@RequestBody CuentaBanco pro) {
-		
+		log.debug("En el controlador-crear producto");
 		//EL DNI DEBE DE EXISTIR EN EL MS-CREDITO PARA QUE PUEDA VERIFICAR
 		return productoService.saveProductoBancoCliente(pro);
 	}

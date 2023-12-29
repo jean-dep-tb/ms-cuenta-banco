@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import reactor.core.publisher.Flux;
@@ -16,8 +14,7 @@ import spring.boot.webflu.ms.cuenta.banco.app.documents.TipoBancoCuenta;
 import spring.boot.webflu.ms.cuenta.banco.app.service.ProductoBancoService;
 import spring.boot.webflu.ms.cuenta.banco.app.service.TipoBancoProductoService;
 
-@EnableCircuitBreaker
-@EnableEurekaClient
+
 @SpringBootApplication
 public class SpringBootWebfluMsCuentaBancoApplication implements CommandLineRunner{
 
